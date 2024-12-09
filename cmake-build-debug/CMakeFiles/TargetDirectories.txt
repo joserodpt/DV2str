@@ -1,0 +1,3 @@
+/Users/joserod/CLionProjects/DV2str/cmake-build-debug/CMakeFiles/DV2str.dir
+/Users/joserod/CLionProjects/DV2str/cmake-build-debug/CMakeFiles/edit_cache.dir
+/Users/joserod/CLionProjects/DV2str/cmake-build-debug/CMakeFiles/rebuild_cache.dir
