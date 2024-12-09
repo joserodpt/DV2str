@@ -1,3 +1,4 @@
+import os
 import struct
 import sys
 
@@ -50,6 +51,9 @@ def get_dv_recording_time(data, name, offset):
     min = (pack63[3] & 0xf) + 10 * ((pack63[3] >> 4) & 0x7)
     hour = (pack63[4] & 0xf) + 10 * ((pack63[4] >> 4) & 0x3)
 
+    if debug:
+        print(f"Timecode: {day:02}/{month:02}/{year} {hour:02}:{min:02}:{sec:02}")
+
     # **Validation Checks** (all checks are done before the return)
     if not (1 <= day <= 31):
         return None
@@ -88,11 +92,15 @@ def read_string(file, offset, size=4):
 
 
 def print_header_help(name):
+    if not debug:
+        return
     print(f"\n--- {name} ---")
     print(f"{'Offset':<6} {'Name':<20} {'Size':<6} {'Value':<12} {'Hex Bytes'}")
 
 
 def print_header_info(offset, name, size, value, hex_bytes):
+    if not debug:
+        return
     print(f"{offset:<6} {name:<20} {size:<6} {value:<12} {hex_bytes}")
 
 
@@ -134,10 +142,10 @@ def parse_idx1(file, offset):
 
 
 def parse_riff_header(file):
-    #print_header_help('RIFF Header')
+    print_header_help('RIFF Header')
     offset = 0
     riff_id, raw_data, hex_bytes = read_string(file, offset, 4)
-    #print_header_info(offset, 'RIFF ID', 4, riff_id, hex_bytes)
+    print_header_info(offset, 'RIFF ID', 4, riff_id, hex_bytes)
 
     if riff_id != 'RIFF':
         print('This is not a valid AVI file.')
@@ -145,10 +153,10 @@ def parse_riff_header(file):
 
     offset += 4
     riff_size, raw_data, hex_bytes = read_int(file, offset, 4)
-    # print_header_info(offset, 'Size', 4, riff_size, hex_bytes)
+    print_header_info(offset, 'Size', 4, riff_size, hex_bytes)
     offset += 4
     riff_format, raw_data, hex_bytes = read_string(file, offset, 4)
-    # print_header_info(offset, 'Format', 4, riff_format, hex_bytes)
+    print_header_info(offset, 'Format', 4, riff_format, hex_bytes)
 
     return offset
 
@@ -487,9 +495,7 @@ def parse_avi_file(file_path):
 
                         results = get_dv_recording_time(file.read(size), stream_id, offset)
                         if results:
-                            # print(f"Found timecode in stream {stream_id}: {results}")
-                            if results not in timecodeDates:
-                                timecodeDates.append(results)
+                            timecodeDates.append(results)
 
                 return timecodeDates
             else:
@@ -539,13 +545,11 @@ def formatSeconds(seconds):
 def write_dates_to_srt(dates_list, filePath):
     """Write the list of dates as tuples (day, month, year, hour, min, sec) to an SRT file with the given offset."""
 
-   # use the same file path as the input file but with a .srt extension
-    fileName = filePath.split(".")[0] + ".srt"
-    print(fileName)
+    filePath = filePath.replace(".avi", ".srt")
 
-    print('Writing timecodes to SRT file...', fileName)
+    print('Writing timecodes to SRT file...', filePath)
 
-    with open(fileName, 'w') as f:
+    with open(filePath, 'w') as f:
         previous_time = 0
 
         for i, date_tuple in enumerate(dates_list):
@@ -559,18 +563,64 @@ def write_dates_to_srt(dates_list, filePath):
             f.write(f"{hour:02}:{minute:02}:{second:02}\n")
             f.write("\n")
 
-            print(f"{day:02}/{month:02}/{year} {hour:02}:{minute:02}:{second:02}")
-
             # Update previous time
             previous_time += 1  # Increment by 1 second
 
+def process_avi_file(file_path):
+    """Processes a single AVI file, extracting timecodes and saving to an SRT file."""
+    print(f"Processing file: {file_path}")
+    if not file_path.endswith(".avi"):
+        print("Invalid file format. Please provide an AVI file.")
+        return
+
+    timecodeDates = parse_avi_file(file_path)
+    if not timecodeDates:
+        print(f"Could not find timecodes in file: {file_path} (ffmpeg cut?)")
+        return
+
+    # Count occurrences of each date
+    count = {}
+    for date in timecodeDates:
+        count[date] = count.get(date, 0) + 1
+
+    # Sort by frequency (descending) and filter out items with fewer than 3 occurrences
+    count = {key: value for key, value in sorted(count.items(), key=lambda item: item[1], reverse=True) if value >= 3}
+
+    # Sort the filtered list of timecodes by date and time (year, month, day, hour, minute, second)
+    sorted_dates = sorted(count.keys(), key=lambda x: (x[2], x[1], x[0], x[3], x[4], x[5]))
+
+    for x in sorted_dates:
+        print(f"{x[2]:02}/{x[1]:02}/{x[0]} {x[3]:02}:{x[4]:02}:{x[5]:02}")
+
+    write_dates_to_srt(sorted_dates, file_path)
+
+def process_avi_directory(directory_path):
+    """Processes all AVI files within a directory."""
+    print(f"Converting all AVI files in directory: {directory_path}")
+    for root, _, files in os.walk(directory_path):
+        for file in files:
+            if file.endswith(".avi"):
+                full_file_path = os.path.join(root, file)
+                process_avi_file(full_file_path)
+
+    print("All AVI files processed.")
 
 fileName = "timecode"
 
+debug = False
+
 if __name__ == "__main__":
     file_path = sys.argv[1]
-    fileName = file_path.split(".")[0].split("/")[-1]
-    print(f"Processing file: {fileName}")
-    timecodeDates = parse_avi_file(file_path)
-    if len(timecodeDates) > 0:
-        write_dates_to_srt(timecodeDates, file_path)
+    debug = "-d" in sys.argv
+
+    #check if file_Path is an AVI file or directory
+
+    if os.path.isdir(file_path):
+        process_avi_directory(file_path)
+    elif os.path.isfile(file_path):
+        process_avi_file(file_path)
+    else:
+        print("Invalid file path. Please provide a valid AVI file or directory.")
+        sys.exit(1)
+
+
