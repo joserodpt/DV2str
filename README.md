@@ -1,7 +1,7 @@
 # DV2str - A DV Timecode Extractor Tool
 
 ## Table of Content
-- [Why do I Need this Tool?](#why-do-i-need-the-dv-timecode-extractor-tool)
+- [Project Overview](#why-do-i-need-the-dv-timecode-extractor-tool)
 - [Features](#features)
 - [How DV2str Works](#how-dv2str-works)
 - [(.avi) file format - Header References](#avi-file-format---header-references)
@@ -14,9 +14,11 @@
 - [Authors & Contributors](#authors--contributors)
 
 
-## Why do I need the DV Timecode Extractor Tool?
+## Project Overview
 
 The **DV Timecode Extractor Tool** is a program developed in **Python**, and later on converted to **C++**, to extract the **timecode** data (following the **DD** / **MM** / **YYYY** **HH** : **mm** : **ss** Format) from **DV video streams**, encapsulated in **.avi** files, and generate **.srt** files, that could be ser embedded in **.mp4** containers.
+
+There's also a project that contains the same ideia applied for **.mp4** camcorder files, called [mp4str](https://github.com/joserodpt/mp4str).
 
 ## Features
 
