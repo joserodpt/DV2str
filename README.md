@@ -18,7 +18,7 @@
 
 The **DV Timecode Extractor Tool** is a program developed in **Python**, and later on converted to **C++**, to extract the **timecode** data (following the **DD** / **MM** / **YYYY** **HH** : **mm** : **ss** Format) from **DV video streams**, encapsulated in **.avi** files, and generate **.srt** files, that could be ser embedded in **.mp4** containers.
 
-There's also a project that contains the same ideia applied for **.mp4** camcorder files, called [mp4str](https://github.com/joserodpt/mp4str).
+There's also a project that contains the same ideia applied for **.mp4** camcorder files, called [mp4str](https://github.com/joserodpt/mp42str).
 
 ## Features
 
