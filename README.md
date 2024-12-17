@@ -7,9 +7,8 @@
 - [(.avi) file format - Header References](#avi-file-format---header-references)
 - [DV Format in .avi](#dv-format-in-avi)
 - [Main Functions](#main-functions)
-- [Code Structure](#code-structure)
+- [Debug](#debugging-with-'-d'-flag)
 - [How to Install](#how-to-install)
-- [Output Examples](#output-examples)
 - [License](#license)
 - [Authors & Contributors](#authors--contributors)
 
@@ -67,13 +66,14 @@ NOTE: The source code in this project uses logic similar to that found in WinDV(
 - **parse_idx1(file, offset)**: Locates the chunks index on the file.
 
 
----
+### Debugging with '-d' Flag
+The -d (debug) flag provides detailed information when executing the program, to assist in troubleshooting. 
+When enabled, the program outputs:
+- **Raw DV packet data for inspection.**
+- **Frame timecodes and subcodes extracted from the AVI file.**
+- **Any anomalies or errors encountered during processing.**
 
-
-## Code Structure
-- **Reads & Decodes** the **.avi** file.
-- **Extacts** the **timecode**.
-- **Analyses** all data to ensure consistency, and to **avoid any faults**.
+This is particularly useful for validating DV data integrity and analyzing specific frames in the video stream.
 
 
 ---
@@ -94,16 +94,6 @@ NOTE: The source code in this project uses logic similar to that found in WinDV(
 
 4. **Output**:
    - The Date and timecode will then be shown on your device's Terminal.
-
-
----
-
-
-## Output Examples
-
-If/While processing an uncorrupted DV/.avi file, this is an example of what to expect from an Output Stream:
-
-**Processing video chunk video1 at offset 1000, size 144000 bytes Timecode: 12/05/2007 14:32:45**
 
 
 ---
