@@ -7,7 +7,7 @@
 - [(.avi) file format - Header References](#avi-file-format---header-references)
 - [DV Format in .avi](#dv-format-in-avi)
 - [Main Functions](#main-functions)
-- [Debug](#debugging-with-'-d'-flag)
+- [Debug](#debugging-with-d-flag)
 - [How to Install](#how-to-install)
 - [License](#license)
 - [Authors & Contributors](#authors--contributors)
@@ -66,12 +66,12 @@ NOTE: The source code in this project uses logic similar to that found in WinDV(
 - **parse_idx1(file, offset)**: Locates the chunks index on the file.
 
 
-### Debugging with '-d' Flag
+### Debugging with *d* Flag
 The -d (debug) flag provides detailed information when executing the program, to assist in troubleshooting. 
 When enabled, the program outputs:
-- **Raw DV packet data for inspection.**
-- **Frame timecodes and subcodes extracted from the AVI file.**
-- **Any anomalies or errors encountered during processing.**
+- Raw DV packet data for inspection.
+- Frame timecodes and subcodes extracted from the AVI file.
+- Any anomalies or errors encountered during processing.
 
 This is particularly useful for validating DV data integrity and analyzing specific frames in the video stream.
 
